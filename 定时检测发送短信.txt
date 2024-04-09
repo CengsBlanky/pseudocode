@@ -1,0 +1,29 @@
+# 注释以井号开头
+# global表示全局变量，local表示本地变量
+# 初始化一个全局变脸send_message_flag，初始值为空字符串
+global send_message_flag = ""
+# 获取当前小时
+local hour = getHour()
+# 获取当前分钟
+local minutes = getMinute()
+# 获取当天年月日
+local year = getYear()
+local month = getMonth()
+local day = getDay()
+# 通过字符串拼接，将年月日拼接起来形如：20240409
+local today_send_date = String(year) + String(month) + String(day)
+# 假设设定在每日11:43发送短信
+# 在11:43及之后，都需要检查一下是否已经完成任务执行 
+if ((hour >= 11 and minutes >= 43) or (hour > 11)) {
+# 如果全局变量等于设定的日期，表示任务已经执行，直接退出即可
+  if (send_message_flag == today_send_date) {
+    return
+  } else {
+# 如果不相等，说明短信任务没有执行，需要发送短信
+    send_message()
+# 发送完短信之后，设置全局变量，防止重复发送
+    send_message_flag = today_send_date
+  }
+}
+
+# 注：最稳妥的办法是，全局变量send_message_flag存储在数据库中，每次执行任务从数据库中读取，发送短信之后存入数据库，这样即便设备重启或者离线，数据库中仍然有记录
